@@ -1,34 +1,37 @@
-from dataclasses import dataclass, asdict
+from datetime import datetime
+from dataclasses import dataclass
 from dacite import from_dict
+from mongoengine import Document, EmbeddedDocument, IntField, StringField, BooleanField, FloatField, \
+    EmbeddedDocumentField, DictField, DateTimeField
+from mongo_utils import update_modified
+
+
+class Coordinates(EmbeddedDocument):
+    lat = FloatField(required=True)
+    lon = FloatField(required=True)
+
+
+@update_modified.apply
+class BezrealitkyListing(Document):
+    listing_id = IntField(required=True)
+    uri = StringField(required=True)
+    title = StringField(required=True)
+    sub_title = StringField(required=True)
+    coordinates = EmbeddedDocumentField(Coordinates)
+    info = DictField()
+    active = BooleanField(default=True)
+    created_on = DateTimeField(default=datetime.utcnow)
+    modified_on = DateTimeField(default=datetime.utcnow)
+
+    meta = {'collection': 'bezrealitky'}
 
 
 @dataclass
-class BezrealitkyBaseApartmentDto:
+class BezrealitkyListingBaseDto:
     id: int = None
     uri: str = None
 
-    @staticmethod
-    def from_dict(data: dict) -> 'BezrealitkyBaseApartmentDto':
+    @classmethod
+    def from_dict(cls, data):
         data['id'] = int(data['id'])
-        return from_dict(BezrealitkyBaseApartmentDto, data)
-
-
-@dataclass
-class Coordinates:
-    lat: float = 0.0
-    lng: float = 0.0
-
-
-@dataclass
-class BezrealitkyApartmentDTO(BezrealitkyBaseApartmentDto):
-    title: str = None
-    sub_title: str = None
-    coordinates: Coordinates = None
-    apartment_info: dict = None
-
-    def asdict(self) -> dict:
-        return asdict(self)
-
-    @staticmethod
-    def from_dict(data: dict) -> 'BezrealitkyApartmentDTO':
-        return from_dict(data_class=BezrealitkyApartmentDTO, data=data)
+        return from_dict(cls, data)

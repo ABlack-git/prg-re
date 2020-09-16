@@ -2,7 +2,7 @@ from typing import Tuple, Union, List
 
 import requests
 from bs4 import BeautifulSoup
-from bezrealitky.entities import BezrealitkyApartmentDTO, Coordinates, BezrealitkyBaseApartmentDto
+from bezrealitky.entities import Coordinates, BezrealitkyListing, BezrealitkyListingBaseDto
 from bezrealitky.enums import ApartmentInfo, info_mapping, layout_mapping
 
 _BASE_URL = 'https://www.bezrealitky.com'
@@ -15,7 +15,7 @@ def __make_soup(url) -> BeautifulSoup:
     return BeautifulSoup(resp.content, 'html.parser')
 
 
-def get_apartment_list() -> List[BezrealitkyBaseApartmentDto]:
+def get_list_of_listings() -> List[BezrealitkyListingBaseDto]:
     request_body = {
         'offerType': 'pronajem',
         'estateType': 'byt',
@@ -40,24 +40,23 @@ def get_apartment_list() -> List[BezrealitkyBaseApartmentDto]:
     }
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     resp = requests.post(_API_APARTMENTS_LIST, data=request_body, headers=headers).json()
-    return [BezrealitkyBaseApartmentDto.from_dict(data) for data in resp]
+    return [BezrealitkyListingBaseDto.from_dict(data) for data in resp]
 
 
-def get_apartment_info(uri: str, listing_id: int) -> BezrealitkyApartmentDTO:
-    apartment = __make_soup(_FLATS_URL + '/' + uri)
-    print(_FLATS_URL + '/' + uri)
-    dto = BezrealitkyApartmentDTO()
-    dto.id = listing_id
-    dto.uri = uri
-    dto.coordinates = _parse_coords(apartment)
-    dto.title, dto.sub_title = _parse_titles(apartment)
-    dto.apartment_info = _parse_info(apartment)
-    return dto
+def get_listing(uri: str, listing_id: int) -> BezrealitkyListing:
+    listing_page = __make_soup(_FLATS_URL + '/' + uri)
+    listing = BezrealitkyListing()
+    listing.listing_id = listing_id
+    listing.uri = uri
+    listing.title, listing.sub_title = _parse_titles(listing_page)
+    listing.coordinates = _parse_coords(listing_page)
+    listing.info = _parse_info(listing_page)
+    return listing
 
 
 def _parse_coords(page: BeautifulSoup) -> Coordinates:
     map_div = page.find('div', class_='b-map__inner')
-    return Coordinates(float(map_div.get('data-lat')), float(map_div.get('data-lng')))
+    return Coordinates(lat=float(map_div.get('data-lat')), lon=float(map_div.get('data-lng')))
 
 
 def _parse_titles(page: BeautifulSoup) -> Tuple[str, str]:
