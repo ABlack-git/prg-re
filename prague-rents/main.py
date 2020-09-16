@@ -1,7 +1,13 @@
+import logging.config
+import logging
+from mongoengine import connect
+from bezrealitky import scraper
 import yaml
 
-from repo import MongoRepository
-from scrapers import BezrealitkyScraper
+with open('logger-conf.yml', 'r') as f:
+    config = yaml.safe_load(f.read())
+    logging.config.dictConfig(config)
+log = logging.getLogger('main')
 
 
 def read_config():
@@ -10,9 +16,12 @@ def read_config():
     return conf
 
 
-if __name__ == '__main__':
+def main():
+    log.info("Starting scraper")
     config = read_config()
-    mongo_conf = config['mongo']
-    repo = MongoRepository(mongo_conf['host'], mongo_conf['port'], mongo_conf['database'])
-    bezr_scraper = BezrealitkyScraper(repo)
-    bezr_scraper.scrap()
+    connect(config['mongo']['database'], host=config['mongo']['host'], port=config['mongo']['port'])
+    scraper.scrap()
+
+
+if __name__ == '__main__':
+    main()

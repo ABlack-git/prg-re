@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mongo-service:
+    container_name: prague-rents-mongo
+    image: mongo
+    ports:
+    - 51999:27017
+    volumes:
+    - "/apps/mongodb:/data/db"
