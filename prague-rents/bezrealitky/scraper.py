@@ -1,5 +1,6 @@
 import logging
 import bezrealitky.client as client
+from time import sleep
 from bezrealitky.entities import BezrealitkyListing
 
 log = logging.getLogger('main')
@@ -14,9 +15,12 @@ def scrap():
     log.info(f'After filtering {len(filtered_list)} listings remained')
 
     for base_listing in filtered_list:
+        sleep(1)
         log.info(f'Scraping listing with id: {base_listing.id} uri: {base_listing.uri}')
         listing = client.get_listing(base_listing.uri, base_listing.id)
         listing.save()
+
+    log.info("Finished scraping bezrealitky")
 
 
 def _update_inactive(listing_ids: set):
