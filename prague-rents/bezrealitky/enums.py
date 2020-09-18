@@ -28,6 +28,7 @@ class ApartmentInfo(Enum):
     TERRACE = ('Terrace', 'terrace', bool)
     GARAGE = ('Garage', 'garage', bool)
     LIFT = ('Lift', 'lift', bool)
+    NEW_BUILDING = ('New building', 'new_building', bool)
 
     def __init__(self, info_name, key, prop_type):
         self.info_name: str = info_name

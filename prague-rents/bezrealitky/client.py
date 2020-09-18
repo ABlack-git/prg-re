@@ -1,9 +1,12 @@
 from typing import Tuple, Union, List
 
 import requests
+import logging
 from bs4 import BeautifulSoup
 from bezrealitky.entities import Coordinates, BezrealitkyListing, BezrealitkyListingBaseDto
 from bezrealitky.enums import ApartmentInfo, info_mapping, layout_mapping
+
+log = logging.getLogger('main')
 
 _BASE_URL = 'https://www.bezrealitky.com'
 _API_APARTMENTS_LIST = 'https://www.bezrealitky.cz/api/record/markers'
@@ -70,10 +73,15 @@ def _parse_info(page: BeautifulSoup) -> dict:
     info_table = page.find('table', class_='table').find_all('tr')
     info_dict = {}
     for spec_entry in info_table:
-        info_name = spec_entry.find('th').get_text().strip(':')
-        info_type = info_mapping[info_name]
-        value = __process_info_value(info_type, spec_entry.find('td').get_text())
-        info_dict[info_type.key] = value
+        info_name: str = spec_entry.find('th').get_text().strip(':')
+        info_type = info_mapping[info_name] if info_name in info_mapping else None
+        value = spec_entry.find('td').get_text()
+        if info_type is not None:
+            value = __process_info_value(info_type, value)
+            info_dict[info_type.key] = value
+        else:
+            log.warning(f"{info_name} key is not known")
+            info_dict[info_name.lower().replace(' ', '_')] = value
     return info_dict
 
 
