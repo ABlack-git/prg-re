@@ -40,7 +40,7 @@ def get_list_of_listings() -> List[BezrealitkyListingBaseDto]:
     }
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     resp = requests.post(_API_APARTMENTS_LIST, data=request_body, headers=headers).json()
-    return [BezrealitkyListingBaseDto.from_dict(data) for data in resp]
+    return [BezrealitkyListingBaseDto.from_dict(data) for data in resp if data['type'] != 'iDeveloper']
 
 
 def get_listing(uri: str, listing_id: int) -> BezrealitkyListing:
