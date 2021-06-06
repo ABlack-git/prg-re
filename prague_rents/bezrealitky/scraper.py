@@ -1,7 +1,7 @@
 import logging
-import bezrealitky.client as client
+import prague_rents.bezrealitky.client as client
 from time import sleep
-from bezrealitky.entities import BezrealitkyListing
+from prague_rents.bezrealitky.entities import BezrealitkyListing
 
 log = logging.getLogger('main')
 

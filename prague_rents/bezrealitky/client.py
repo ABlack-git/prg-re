@@ -3,8 +3,8 @@ from typing import Tuple, Union, List
 import requests
 import logging
 from bs4 import BeautifulSoup
-from bezrealitky.entities import Coordinates, BezrealitkyListing, BezrealitkyListingBaseDto
-from bezrealitky.enums import ApartmentInfo, info_mapping, layout_mapping
+from prague_rents.bezrealitky.entities import Coordinates, BezrealitkyListing, BezrealitkyListingBaseDto
+from prague_rents.bezrealitky.enums import ApartmentInfo, info_mapping, layout_mapping
 
 log = logging.getLogger('main')
 

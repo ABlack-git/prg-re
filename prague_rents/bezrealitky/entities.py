@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from dacite import from_dict
 from mongoengine import Document, EmbeddedDocument, IntField, StringField, BooleanField, FloatField, \
     EmbeddedDocumentField, DictField, DateTimeField
-from mongo_utils import update_modified
+from prague_rents.mongo_utils import update_modified
 
 
 class Coordinates(EmbeddedDocument):

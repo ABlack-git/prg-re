@@ -1,7 +1,7 @@
 import logging.config
 import logging
 from mongoengine import connect
-from bezrealitky import scraper
+from prague_rents.bezrealitky import scraper
 import yaml
 
 with open('logger-conf.yml', 'r') as f:
