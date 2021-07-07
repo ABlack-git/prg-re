@@ -77,8 +77,12 @@ def _parse_info(page: BeautifulSoup) -> dict:
         info_type = info_mapping[info_name] if info_name in info_mapping else None
         value = spec_entry.find('td').get_text()
         if info_type is not None:
-            value = __process_info_value(info_type, value)
-            info_dict[info_type.key] = value
+            try:
+                value = __process_info_value(info_type, value)
+                info_dict[info_type.key] = value
+            except (ValueError, KeyError) as e:
+                log.error(f"Error occurred when processing info entry {info_type} with value {value}", e)
+                log.info(f"Skipping processing of {info_type}")
         else:
             log.warning(f"{info_name} key is not known")
             info_dict[info_name.lower().replace(' ', '_')] = value

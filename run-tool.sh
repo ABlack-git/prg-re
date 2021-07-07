@@ -1,8 +1,17 @@
 set -e
 unset http_proxy
 unset https_proxy
+# Workaround for cron, won't work on other systems
+export PATH=/usr/local/Caskroom/miniconda/base/condabin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 CONTAINER_NAME=prague-rents-mongo
+
+function clean_up {
+  echo "Stopping docker container(s)"
+  # add if CID is not empty
+  docker-compose -f docker/docker-compose.yml -p prague-rents stop
+}
+trap clean_up EXIT
 
 ## create/update env
 if [[ ! -d .env ]]; then
@@ -39,3 +48,5 @@ fi
 ## start tool
 echo "Starting tool"
 prg-rents-downloader
+
+clean_up
